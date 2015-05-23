@@ -1,0 +1,11 @@
+token:  # コンパネで作成したAPIキーのaccess-tokenを記入してください
+secret: # コンパネで作成したAPIキーのaccess-token-secretを記入してください
+disks:
+  tk1v: # Sandboxゾーン
+    - 999999999999 # アーカイブ化したいディスクのリソースIDを記入してください
+    - 999999999999 # 複数のディスクを指定可能です
+  tk1a: # 東京第１ゾーン
+  is1a: # 石狩第１ゾーン
+  is1b: # 石狩第２ゾーン
+auto_delete:
+  enable: false
