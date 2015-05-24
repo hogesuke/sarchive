@@ -17,7 +17,7 @@ module Sarchive
       disk = get_disk(disk_id)
 
       unless disk
-        STDERR.print("ディスク[id=#{disk_id}]が見つかりません。アーカイブの作成を中止します\n")
+        STDERR.puts("ディスク[id=#{disk_id}]が見つかりません。アーカイブの作成を中止します")
         return nil
       end
 
@@ -28,7 +28,7 @@ module Sarchive
       archive.save
 
       unless archive.sleep_while_copying
-        STDERR.print("ディスクからアーカイブへのコピーがタイムアウトまたは失敗しました\n")
+        STDERR.puts('ディスクからアーカイブへのコピーがタイムアウトまたは失敗しました')
         return nil
       end
 

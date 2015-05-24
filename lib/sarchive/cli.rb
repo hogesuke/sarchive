@@ -11,12 +11,12 @@ module Sarchive
     def init()
       dest = File.expand_path(options[:path])
 
-      STDOUT.print("設定ファイルを作成します\n")
+      STDOUT.puts('設定ファイルを作成します')
 
       operation = 'create'
 
       if File.exist?(dest)
-        STDOUT.print('すでに設定ファイルが存在します。上書きしますか？(y/n)')
+        STDOUT.puts('すでに設定ファイルが存在します。上書きしますか？(y/n)')
         input = STDIN.gets.chomp
 
         case input
@@ -27,7 +27,7 @@ module Sarchive
         end
       end
 
-      STDOUT.print("[#{operation}] #{dest}")
+      STDOUT.puts("[#{operation}] #{dest}")
 
       unless operation == 'skip'
         FileUtils.cp(File.expand_path('../sarchive.config.yml.example', __FILE__), dest)
@@ -40,7 +40,7 @@ module Sarchive
     option :path, :type => :string, :default => './sarchive.config.yml', :banner => '読み込む設定ファイルのパス'
     def exec()
       unless File.exist?(options[:path])
-        STDERR.print('設定ファイルが存在しません')
+        STDERR.puts('設定ファイルが存在しません')
         exit(false)
       end
 
@@ -50,7 +50,7 @@ module Sarchive
       disks  = config['disks']
 
       unless token and secret
-        STDERR.print("tokenまたはsecretが設定されていません\n")
+        STDERR.puts('tokenまたはsecretが設定されていません')
         exit(false)
       end
 
