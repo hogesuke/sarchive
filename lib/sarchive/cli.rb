@@ -44,14 +44,40 @@ module Sarchive
         exit(false)
       end
 
-      config = YAML.load_file(options[:path])
-      token  = config['token']
-      secret = config['secret']
-      disks  = config['disks']
+      config      = YAML.load_file(options[:path])
+      token       = config['token']
+      secret      = config['secret']
+      disks       = config['disks']
+      auto_delete = config['auto_delete']
 
       unless token and secret
         STDERR.puts('tokenまたはsecretが設定されていません')
         exit(false)
+      end
+
+      if auto_delete['enable']
+
+        counts = auto_delete['store']['counts']
+        hours  = auto_delete['store']['hours']
+
+        if counts
+          unless counts.is_a?(Integer) and 0 < counts
+            STDERR.puts('countsには正の整数を指定してください')
+            exit(false)
+          end
+        end
+
+        if hours
+          unless hours.is_a?(Integer) and 0 < hours
+            STDERR.puts('hoursには正の整数を指定してください')
+            exit(false)
+          end
+        end
+
+        if counts and hours
+          STDERR.puts('auto_deleteのcountsとhoursはどちらか一方のみを指定してください')
+          exit(false)
+        end
       end
 
       sacloud = Sarchive::Sacloud.new(token, secret)
@@ -63,8 +89,55 @@ module Sarchive
 
         sacloud.set_zone(zone)
 
-        disk_ids.each do |id|
-          sacloud.create_archive(id)
+        disk_ids.each do |disk_id|
+          # 作成パート
+          archive = sacloud.create_archive(disk_id)
+
+          unless archive
+            next
+          end
+
+          # 削除パート
+          if auto_delete['enable']
+            archives = sacloud.find_stored_archives(disk_id)
+
+            items = []
+            archives.each do |a|
+              a.description.match(/(\d{4})\-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/) do |m|
+                items.push({ :archive => a, :created_at => m[1] + m[2] + m[3] + m[4] + m[5] + m[6] })
+              end
+            end
+
+            sorted_items = items.sort do |a, b|
+              a[:created_at] <=> b[:created_at]
+            end
+
+            counts = auto_delete['store']['counts']
+            hours  = auto_delete['store']['hours']
+
+            if counts
+
+              if counts < sorted_items.length
+                (sorted_items.length - counts).times do |i|
+                  sacloud.delete_archive(sorted_items[i][:archive].id)
+                end
+              end
+
+            elsif hours
+
+              sorted_items.each do |a|
+                at = a[:created_at]
+                time = Time.local(at[0, 4], at[4, 2], at[6, 2], at[8, 2], at[10, 2], at[12, 2])
+
+                # 秒に換算し加算
+                time += hours * 60 * 60
+
+                if time < Time.now
+                  sacloud.delete_archive(a[:archive].id)
+                end
+              end
+            end
+          end
         end
       end
 

@@ -4,11 +4,11 @@ module Sarchive
   class Sacloud
 
     def initialize(token, secret)
+      @sarchive_tag = 'sarchive_'
       @api = Saklient::Cloud::API::authorize(token, secret)
     end
 
     def set_zone(zone)
-      pp zone
       @api = @api.in_zone(zone)
     end
 
@@ -17,18 +17,20 @@ module Sarchive
       disk = get_disk(disk_id)
 
       unless disk
-        STDERR.puts("ディスク[id=#{disk_id}]が見つかりません。アーカイブの作成を中止します")
+        STDERR.puts("アーカイブ対象のディスク[id=#{disk_id}]が見つかりません。アーカイブの作成をスキップします")
         return nil
       end
 
+      created_at          = Time.now.strftime("%Y-%m-%d %H:%M:%S")
       archive             = @api.archive.create
       archive.name        = disk.name
-      archive.description = 'created by sarchive'
+      archive.description = "created by sarchive at #{created_at}"
+      archive.tags        = [@sarchive_tag]
       archive.source      = disk
       archive.save
 
       unless archive.sleep_while_copying
-        STDERR.puts('ディスクからアーカイブへのコピーがタイムアウトまたは失敗しました')
+        STDERR.puts("ディスク[id=#{disk.id}, name=#{disk.name}]からアーカイブへのコピーがタイムアウトまたは失敗しました。コンパネでステータスを確認してください")
         return nil
       end
 
@@ -36,7 +38,23 @@ module Sarchive
     end
 
     def delete_archive(disk_id)
+      archive = @api.archive.get_by_id(disk_id.to_s) rescue nil
 
+      unless archive
+        STDERR.puts("削除対象のアーカイブ[id=#{disk_id}]が見つかりません。アーカイブの削除をスキップします")
+        return
+      end
+
+      archive.destroy
+    end
+
+    def find_stored_archives(disk_id)
+      @api.archive.
+          filter_by('SourceDisk.ID', disk_id.to_s).
+          with_tag(@sarchive_tag).
+          find
+    rescue
+      nil
     end
 
     private
