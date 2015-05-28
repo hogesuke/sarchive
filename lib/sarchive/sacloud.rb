@@ -3,9 +3,10 @@ require 'saklient/cloud/api'
 module Sarchive
   class Sacloud
 
-    def initialize(token, secret)
+    def initialize(token, secret, logger)
       @sarchive_tag = 'sarchive_'
-      @api = Saklient::Cloud::API::authorize(token, secret)
+      @api          = Saklient::Cloud::API::authorize(token, secret)
+      @logger       = logger
     end
 
     def set_zone(zone)
@@ -17,7 +18,7 @@ module Sarchive
       disk = get_disk(disk_id)
 
       unless disk
-        STDERR.puts("アーカイブ対象のディスク[id=#{disk_id}]が見つかりません。アーカイブの作成をスキップします")
+        @logger.error("アーカイブ対象のディスク[id=#{disk_id}]が見つかりません。アーカイブの作成をスキップします")
         return nil
       end
 
@@ -30,7 +31,7 @@ module Sarchive
       archive.save
 
       unless archive.sleep_while_copying
-        STDERR.puts("ディスク[id=#{disk.id}, name=#{disk.name}]からアーカイブへのコピーがタイムアウトまたは失敗しました。コンパネでステータスを確認してください")
+        @logger.error("ディスク[id=#{disk.id}, name=#{disk.name}]からアーカイブへのコピーがタイムアウトまたは失敗しました。コンパネでステータスを確認してください")
         return nil
       end
 
@@ -41,7 +42,7 @@ module Sarchive
       archive = @api.archive.get_by_id(disk_id.to_s) rescue nil
 
       unless archive
-        STDERR.puts("削除対象のアーカイブ[id=#{disk_id}]が見つかりません。アーカイブの削除をスキップします")
+        @logger.error("削除対象のアーカイブ[id=#{disk_id}]が見つかりません。アーカイブの削除をスキップします")
         return
       end
 

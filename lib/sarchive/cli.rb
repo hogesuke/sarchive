@@ -1,5 +1,6 @@
 require 'sarchive'
 require 'sarchive/sacloud'
+require 'sarchive/plogger'
 require 'thor'
 require 'yaml'
 
@@ -44,14 +45,18 @@ module Sarchive
         exit(false)
       end
 
-      config      = YAML.load_file(options[:path])
-      token       = config['token']
-      secret      = config['secret']
-      disks       = config['disks']
-      auto_delete = config['auto_delete']
+      config       = YAML.load_file(options[:path])
+      token        = config['token']
+      secret       = config['secret']
+      disks        = config['disks']
+      auto_delete  = config['auto_delete']
+      log_path     = config['log_path'] ? config['log_path'] : './log/sarchive.log'
+      err_log_path = config['err_log_path'] ? config['err_log_path'] : './log/sarchive.err.log'
+
+      logger      = PLogger.new(File.expand_path(log_path), File.expand_path(err_log_path))
 
       unless token and secret
-        STDERR.puts('tokenまたはsecretが設定されていません')
+        logger.error('tokenまたはsecretが設定されていません')
         exit(false)
       end
 
@@ -62,25 +67,25 @@ module Sarchive
 
         if counts
           unless counts.is_a?(Integer) and 0 < counts
-            STDERR.puts('countsには正の整数を指定してください')
+            logger.error('countsには正の整数を指定してください')
             exit(false)
           end
         end
 
         if hours
           unless hours.is_a?(Integer) and 0 < hours
-            STDERR.puts('hoursには正の整数を指定してください')
+            logger.error('hoursには正の整数を指定してください')
             exit(false)
           end
         end
 
         if counts and hours
-          STDERR.puts('auto_deleteのcountsとhoursはどちらか一方のみを指定してください')
+          logger.error('auto_deleteのcountsとhoursはどちらか一方のみを指定してください')
           exit(false)
         end
       end
 
-      sacloud = Sarchive::Sacloud.new(token, secret)
+      sacloud = Sarchive::Sacloud.new(token, secret, logger)
 
       disks.each do |zone, disk_ids|
         unless disk_ids
