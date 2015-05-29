@@ -43,7 +43,7 @@ module Sarchive
 
       unless archive
         @logger.error("削除対象のアーカイブ[id=#{disk_id}]が見つかりません。アーカイブの削除をスキップします")
-        return
+        return nil
       end
 
       archive.destroy
