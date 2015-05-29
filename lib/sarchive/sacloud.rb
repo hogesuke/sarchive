@@ -47,6 +47,7 @@ module Sarchive
       end
 
       archive.destroy
+      archive
     end
 
     def find_stored_archives(disk_id)

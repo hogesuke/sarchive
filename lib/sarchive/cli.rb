@@ -92,20 +92,20 @@ module Sarchive
           next
         end
 
-        @logger.info("ターゲット[zone=#{zone}]")
+        logger.info("ターゲット[zone=#{zone}]")
 
         sacloud.set_zone(zone)
 
         disk_ids.each do |disk_id|
           # 作成パート
-          @logger.info("アーカイブ作成開始 ディスク[id=#{disk_id}]")
+          logger.info("アーカイブ作成開始 ディスク[id=#{disk_id}]")
           archive = sacloud.create_archive(disk_id)
 
           unless archive
             next
           end
 
-          @logger.info("アーカイブ作成終了 ディスク[id=#{disk_id}]")
+          logger.info("アーカイブ作成終了 ディスク[id=#{disk_id}]")
 
           # 削除パート
           if auto_delete['enable']
@@ -127,20 +127,20 @@ module Sarchive
 
             if counts
 
-              @logger.info("アーカイブ削除開始 ディスク[id=#{disk_id}] 削除基準[counts=#{counts}]")
+              logger.info("アーカイブ削除開始 ディスク[id=#{disk_id}] 削除基準[counts=#{counts}]")
 
               if counts < sorted_items.length
                 (sorted_items.length - counts).times do |i|
                   ret = sacloud.delete_archive(sorted_items[i][:archive].id)
-                  @logger.info("アーカイブ[id=#{ret.id}]の削除に成功しました") if ret
+                  logger.info("アーカイブ[id=#{ret.id}]の削除に成功しました") if ret
                 end
               end
 
-              @logger.info("アーカイブ削除終了 ディスク[id=#{disk_id}] 削除基準[counts=#{counts}]")
+              logger.info("アーカイブ削除終了 ディスク[id=#{disk_id}] 削除基準[counts=#{counts}]")
 
             elsif hours
 
-              @logger.info("アーカイブ削除開始 ディスク[id=#{disk_id}] 削除基準[hours=#{hours}]")
+              logger.info("アーカイブ削除開始 ディスク[id=#{disk_id}] 削除基準[hours=#{hours}]")
 
               sorted_items.each do |a|
                 at = a[:created_at]
@@ -151,11 +151,11 @@ module Sarchive
 
                 if time < Time.now
                   ret = sacloud.delete_archive(a[:archive].id)
-                  @logger.info("アーカイブ[id=#{ret.id}]の削除に成功しました") if ret
+                  logger.info("アーカイブ[id=#{ret.id}]の削除に成功しました") if ret
                 end
               end
 
-              @logger.info("アーカイブ削除終了 ディスク[id=#{disk_id}] 削除基準[hours=#{hours}]")
+              logger.info("アーカイブ削除終了 ディスク[id=#{disk_id}] 削除基準[hours=#{hours}]")
 
             end
           end
