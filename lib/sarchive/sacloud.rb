@@ -18,7 +18,7 @@ module Sarchive
       disk = get_disk(disk_id)
 
       unless disk
-        @logger.error("アーカイブ対象のディスク[id=#{disk_id}]が見つかりません。アーカイブの作成をスキップします")
+        @logger.error("対象のディスク[id=#{disk_id}]が見つかりません。アーカイブの作成をスキップします")
         return nil
       end
 
@@ -31,7 +31,7 @@ module Sarchive
       archive.save
 
       unless archive.sleep_while_copying
-        @logger.error("ディスク[id=#{disk.id}, name=#{disk.name}]からアーカイブへのコピーがタイムアウトまたは失敗しました。コンパネでステータスを確認してください")
+        @logger.error("ディスク[id=#{disk.id}, name=#{disk.name}]からアーカイブへのコピーがタイムアウトまたは失敗しました。コントロールパネルでステータスを確認してください")
         return nil
       end
 

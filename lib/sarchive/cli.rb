@@ -37,12 +37,12 @@ module Sarchive
       exit(true)
     end
 
-    desc 'exec', 'ディスクをアーカイブします'
+    desc 'exec', 'ディスクのアーカイブを作成します'
     option :path, :type => :string, :default => './sarchive.config.yml', :banner => '読み込む設定ファイルのパス'
     def exec()
       unless File.exist?(options[:path])
         STDERR.puts('設定ファイルが存在しません')
-        exit(false)
+        exit(false) # ログ出力できないのでここで終了する
       end
 
       config       = YAML.load_file(options[:path])
@@ -58,8 +58,7 @@ module Sarchive
       logger.info("Sarchive start.")
 
       unless token and secret
-        logger.error('tokenまたはsecretが設定されていません')
-        exit(false)
+        fail('tokenまたはsecretが設定されていません')
       end
 
       if auto_delete['enable']
@@ -69,31 +68,28 @@ module Sarchive
 
         if counts
           unless counts.is_a?(Integer) and 0 < counts
-            logger.error('countsには正の整数を指定してください')
-            exit(false)
+            fail('countsには正の整数を指定してください')
           end
         end
 
         if hours
           unless hours.is_a?(Integer) and 0 < hours
-            logger.error('hoursには正の整数を指定してください')
-            exit(false)
+            fail('hoursには正の整数を指定してください')
           end
         end
 
         if counts and hours
-          logger.error('auto_deleteのcountsとhoursはどちらか一方のみを指定してください')
-          exit(false)
+          fail('auto_deleteのcountsとhoursはどちらか一方のみを指定してください')
         end
       end
 
       sacloud = Sarchive::Sacloud.new(token, secret, logger)
 
       disks.each do |zone, disk_ids|
+
         unless disk_ids
           next
         end
-
 
         sacloud.set_zone(zone)
 
@@ -146,6 +142,7 @@ module Sarchive
 
               logger.info("Removing... threshold_hours=[#{hours}]")
 
+              target_items = []
               sorted_items.each do |a|
                 at = a[:created_at]
                 time = Time.local(at[0, 4], at[4, 2], at[6, 2], at[8, 2], at[10, 2], at[12, 2])
@@ -154,19 +151,30 @@ module Sarchive
                 time += hours * 60 * 60
 
                 if time < Time.now
-                  ret = sacloud.delete_archive(a[:archive].id)
-                  logger.info("Removing success! archive_id=[#{ret.id}]") if ret
-                else
-                  logger.info("A target doesn't exist.")
+                  target_items.push(a)
                 end
+              end
+
+              if target_items.empty?
+                logger.info("A target doesn't exist.")
+              end
+
+              target_items.each do |a|
+                ret = sacloud.delete_archive(a[:archive].id)
+                logger.info("Removing success! archive_id=[#{ret.id}]") if ret
               end
             end
           end
         end
       end
 
-      logger.info("Sarchive end.")
-      exit (true)
+      logger.info("Sarchive normal end.")
+      exit(true)
+
+    rescue => e
+      logger.error(e.message)
+      logger.info("Sarchive abnormal end.")
+      exit(false)
     end
   end
 
