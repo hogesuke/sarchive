@@ -24,7 +24,7 @@ module Sarchive
       created_at          = Time.now.strftime("%Y-%m-%d %H:%M:%S")
       archive             = @api.archive.create
       archive.name        = disk.name
-      archive.description = "created by sarchive at #{created_at}"
+      archive.description = "Created by sarchive at #{created_at}"
       archive.tags        = [@sarchive_tag]
       archive.source      = disk
       archive.save
