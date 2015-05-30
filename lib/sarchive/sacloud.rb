@@ -18,8 +18,7 @@ module Sarchive
       disk = get_disk(disk_id)
 
       unless disk
-        @logger.error("対象のディスク[id=#{disk_id}]が見つかりません。アーカイブの作成をスキップします")
-        return nil
+        fail("対象のディスク[id=#{disk_id}]が見つかりません。アーカイブの作成をスキップします")
       end
 
       created_at          = Time.now.strftime("%Y-%m-%d %H:%M:%S")
@@ -31,23 +30,29 @@ module Sarchive
       archive.save
 
       unless archive.sleep_while_copying
-        @logger.error("ディスク[id=#{disk.id}, name=#{disk.name}]からアーカイブへのコピーがタイムアウトまたは失敗しました。コントロールパネルでステータスを確認してください")
-        return nil
+        fail("ディスク[id=#{disk.id}, name=#{disk.name}]からアーカイブへのコピーがタイムアウトまたは失敗しました。コントロールパネルでステータスを確認してください")
       end
 
       archive
+
+    rescue => e
+      @logger.error(e.message)
+      nil
     end
 
     def delete_archive(disk_id)
       archive = @api.archive.get_by_id(disk_id.to_s) rescue nil
 
       unless archive
-        @logger.error("削除対象のアーカイブ[id=#{disk_id}]が見つかりません。アーカイブの削除をスキップします")
-        return nil
+        fail("削除対象のアーカイブ[id=#{disk_id}]が見つかりません。アーカイブの削除をスキップします")
       end
 
       archive.destroy
       archive
+
+    rescue => e
+      @logger.error(e.message)
+      nil
     end
 
     def find_stored_archives(disk_id)

@@ -102,6 +102,7 @@ module Sarchive
           archive = sacloud.create_archive(disk_id)
 
           unless archive
+            logger.error("Making failed. disk_id=[#{disk_id}]")
             next
           end
 
@@ -132,7 +133,12 @@ module Sarchive
               if counts < sorted_items.length
                 (sorted_items.length - counts).times do |i|
                   ret = sacloud.delete_archive(sorted_items[i][:archive].id)
-                  logger.info("Removing success! archive_id=[#{ret.id}]") if ret
+
+                  if ret
+                    logger.info("Removing success! archive_id=[#{sorted_items[i][:archive].id}]")
+                  else
+                    logger.error("Removing failed. archive_id=[#{sorted_items[i][:archive].id}]")
+                  end
                 end
               else
                 logger.info("A target doesn't exist.")
@@ -161,7 +167,12 @@ module Sarchive
 
               target_items.each do |a|
                 ret = sacloud.delete_archive(a[:archive].id)
-                logger.info("Removing success! archive_id=[#{ret.id}]") if ret
+
+                if ret
+                  logger.info("Removing success! archive_id=[#{a[:archive].id}]")
+                else
+                  logger.error("Removing failed. archive_id=[#{a[:archive].id}]")
+                end
               end
             end
           end
