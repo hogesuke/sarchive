@@ -58,7 +58,7 @@ module Sarchive
       logger.info("Sarchive start.")
 
       unless token and secret
-        fail('tokenまたはsecretが設定されていません')
+        fail('設定ファイルエラー: tokenまたはsecretが設定されていません')
       end
 
       if auto_delete['enable']
@@ -68,18 +68,18 @@ module Sarchive
 
         if counts
           unless counts.is_a?(Integer) and 0 < counts
-            fail('countsには正の整数を指定してください')
+            fail('設定ファイルエラー: countsには正の整数を指定してください')
           end
         end
 
         if hours
           unless hours.is_a?(Integer) and 0 < hours
-            fail('hoursには正の整数を指定してください')
+            fail('設定ファイルエラー: hoursには正の整数を指定してください')
           end
         end
 
         if counts and hours
-          fail('auto_deleteのcountsとhoursはどちらか一方のみを指定してください')
+          fail('設定ファイルエラー: auto_deleteのcountsとhoursはどちらか一方のみを指定してください')
         end
       end
 
