@@ -12,22 +12,22 @@ cronで定期的に実行するように設定することで、面倒なバッ�
     
 ## 基本的な使い方
 1. 設定ファイルの生成
-        sarchive init [--path] (</path/to/config/sarchive.config.yml>)
+        sarchive init \[--path\] (</path/to/config/sarchive.config.yml>)
 デフォルトではカレントディレクトリに`sarchive.config.yml`を生成します。  
 生成先を変更する場合は`--path`オプションでパスを指定してください。
 
 2. 設定ファイルの編集  
 実行に必要となるAPIキーや、アーカイブ作成対象のディスクを指定してください。
 
-       token:   # コンパネで作成したAPIキーのaccess-tokenを指定してください
-       secret:  # コンパネで作成したAPIキーのaccess-token-secretを指定してください
-       disks:
-         tk1v:  # 対象のゾーン名 (tk1a: 東京第1, is1a: 石狩第1, is1b: 石狩第2, tk1v)
-           - 999999999999 # 対象ディスクのID
-           - 999999999999 # 複数指定可
+        token:   # コンパネで作成したAPIキーのaccess-tokenを指定してください
+        secret:  # コンパネで作成したAPIキーのaccess-token-secretを指定してください
+        disks:
+          tk1v:  # 対象のゾーン名 (tk1a: 東京第1, is1a: 石狩第1, is1b: 石狩第2, tk1v)
+            - 999999999999 # 対象ディスクのID
+            - 999999999999 # 複数指定可
     
 3. 実行
-        sarchive exec [--path] (</path/to/config/sarchive.config.yml>)
+        sarchive exec \[--path\] (</path/to/config/sarchive.config.yml>)
 デフォルトではカレントディレクトリの`sarchive.config.yml`をもとに実行します。  
 読み込む設定ファイルを変更する場合は、`--path`オプションでパスを指定してください。
 
