@@ -6,12 +6,13 @@ require 'sarchive/version'
 Gem::Specification.new do |spec|
   spec.name          = "sarchive"
   spec.version       = Sarchive::VERSION
+  spec.licenses      = ["MIT"]
   spec.authors       = ["hogesuke"]
   spec.email         = ["miyado@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = "「さくらのクラウド」のアーカイブ作成を簡単にコンソールから実行するためのgemです"
+  spec.description   = "このgemを使用することにより、コンソールから簡単に複数のディスクのアーカイブを作成できます。また、アーカイブ作成時に古いアーカイブの削除を同時に行うことも可能です。cronで定期的に実行するように設定することで、面倒なバックアップ作業を自動化できます。"
+  spec.homepage      = "https://github.com/hogesuke/sarchive"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
