@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["miyado@gmail.com"]
 
   spec.summary       = "「さくらのクラウド」のアーカイブ作成を簡単にコンソールから実行するためのgemです"
-  spec.description   = "このgemを使用することにより、コンソールから簡単に複数のディスクのアーカイブを作成できます。また、アーカイブ作成時に古いアーカイブの削除を同時に行うことも可能です。cronで定期的に実行するように設定することで、面倒なバックアップ作業を自動化できます。"
+  spec.description   = "「さくらのクラウド」のアーカイブ作成を簡単にコンソールから実行するためのgemです。アーカイブ作成時に古いアーカイブの削除を同時に行うことも可能です。\ncronで定期的に実行するように設定することで、面倒なバックアップ作業を自動化できます。"
   spec.homepage      = "https://github.com/hogesuke/sarchive"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
