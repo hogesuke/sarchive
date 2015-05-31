@@ -12,7 +12,7 @@ cronで定期的に実行するように設定することで、面倒なバッ�
     
 ## 基本的な使い方
 1. 設定ファイルの生成  
-        sarchive init \[--path\] (</path/to/config/sarchive.config.yml>)
+         sarchive init \[--path\] (\</path/to/config/sarchive.config.yml\>)
 デフォルトではカレントディレクトリに`sarchive.config.yml`を生成します。  
 生成先を変更する場合は`--path`オプションでパスを指定してください。
 
@@ -27,7 +27,7 @@ cronで定期的に実行するように設定することで、面倒なバッ�
             - 999999999999 # 複数指定可
     
 3. 実行  
-        sarchive exec \[--path\] (</path/to/config/sarchive.config.yml>)
+         sarchive exec \[--path\] (\</path/to/config/sarchive.config.yml\>)
 デフォルトではカレントディレクトリの`sarchive.config.yml`をもとに実行します。  
 読み込む設定ファイルを変更する場合は、`--path`オプションでパスを指定してください。
 
