@@ -1,4 +1,4 @@
-Sarchive
+Sarchive [![Gem Version](https://badge.fury.io/rb/sarchive.svg)](http://badge.fury.io/rb/sarchive)
 ==========
 「さくらのクラウド」のアーカイブ作成を簡単にコンソールから実行するためのgemです。
 
